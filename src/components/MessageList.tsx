@@ -25,7 +25,7 @@ export const MessageList = () => {
   const followOutput = isGenerating ? 'auto' : false;
 
   return ( 
-    <div className="flex-1 overflow-hidden custom-scrollbar"> {/* Удален pr-2.5 */}
+    <div className="flex-1 overflow-hidden custom-scrollbar"> 
       <Virtuoso
         data={allMessages}
         totalCount={allMessages.length}
