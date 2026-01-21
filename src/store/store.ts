@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+export const WORD_LIMIT = 10000;
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -17,7 +19,7 @@ interface ChatState {
   stopGeneration: () => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
+export const useChatStore = create<ChatState>((set, get) => ({
   messages: [
     { id: '1', role: 'assistant', content: 'Привет! Чем могу помочь?' }
   ],
@@ -26,8 +28,20 @@ export const useChatStore = create<ChatState>((set) => ({
   addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, message] })),
   setStreamingContent: (content) => set({ streamingContent: content }),
-  appendStreamingContent: (chunk) =>
-    set((state) => ({ streamingContent: state.streamingContent + chunk })),
+  appendStreamingContent: (chunk) => {
+    const { streamingContent, isGenerating } = get();
+
+    if (!isGenerating) return;
+
+    const currentWords = streamingContent.split(/\s+/).filter(Boolean).length;
+
+    if (currentWords >= WORD_LIMIT) {
+      set({ isGenerating: false });
+      return;
+    }
+
+    set({ streamingContent: streamingContent + chunk });
+  },
   setIsGenerating: (isGenerating) => set({ isGenerating }),
   stopGeneration: () =>
     set({ isGenerating: false, streamingContent: '' }),

@@ -54,7 +54,7 @@ export const Chat = () => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
-      
+
     const finalContent = streamingContent.trim();
     if (finalContent) {
       addMessage({
